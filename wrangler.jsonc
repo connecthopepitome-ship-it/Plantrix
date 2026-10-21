@@ -13,7 +13,7 @@
     "NEXT_PUBLIC_SITE_URL": "https://plantrixbotanics.com"
   },
   "build": {
-    "command": "npx opennextjs-cloudflare"
+    "command": "npx opennextjs-cloudflare && node scripts/patch-opennext-bundle.js"
   },
   "observability": {
     "enabled": true

@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "cf-build": "npm run clean && opennextjs-cloudflare",
+    "cf-build": "npm run clean && opennextjs-cloudflare && node scripts/patch-opennext-bundle.js",
     "preview": "npm run cf-build && wrangler dev",
     "deploy": "npm run cf-build && wrangler deploy"
   },
