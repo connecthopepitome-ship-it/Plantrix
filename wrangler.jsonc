@@ -10,7 +10,9 @@
   },
   "vars": {
     "NEXT_PUBLIC_SITE_NAME": "Plantrix Botanics",
-    "NEXT_PUBLIC_SITE_URL": "https://plantrixbotanics.com"
+    "NEXT_PUBLIC_SITE_URL": "https://plantrixbotanics.com",
+    "R2_ACCOUNT_ID": "b598dd3391bac22fc46b65deb8839b4d",
+    "R2_BUCKET_NAME": "plantrix-product-images"
   },
   "build": {
     "command": "npx opennextjs-cloudflare && node scripts/patch-opennext-bundle.js"
