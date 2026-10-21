@@ -1,196 +1,178 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sprout, ShieldCheck, Truck, RotateCcw, HeartHandshake } from 'lucide-react';
+import { Sprout, Check, ArrowRight } from 'lucide-react';
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim() && email.includes('@')) {
+      setSubscribed(true);
+      setEmail('');
+    }
+  };
+
   return (
-    <footer className="bg-brand-forest text-brand-ivory mt-auto border-t border-brand-botanical/40">
-      {/* Trust & Guarantee Banner */}
-      <div className="border-b border-brand-botanical/30 py-8 px-4 sm:px-6 lg:px-8 bg-brand-forest-dark/40">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-brand-botanical/50 flex items-center justify-center shrink-0 text-brand-sage">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-white tracking-wide">Pan-India Delivery</h4>
-              <p className="text-xs text-brand-sage/80 mt-1 leading-relaxed">
-                Carefully packaged plants and durable home essentials delivered safely to your door.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-brand-botanical/50 flex items-center justify-center shrink-0 text-brand-sage">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-white tracking-wide">Curated Quality</h4>
-              <p className="text-xs text-brand-sage/80 mt-1 leading-relaxed">
-                Hand-inspected botanicals and practical home organizers built for longevity.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-brand-botanical/50 flex items-center justify-center shrink-0 text-brand-sage">
-              <RotateCcw className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-white tracking-wide">7-Day Transit Guarantee</h4>
-              <p className="text-xs text-brand-sage/80 mt-1 leading-relaxed">
-                Transit-damaged items replaced or refunded promptly upon photographic verification.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-brand-botanical/50 flex items-center justify-center shrink-0 text-brand-sage">
-              <HeartHandshake className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-white tracking-wide">Customer Support</h4>
-              <p className="text-xs text-brand-sage/80 mt-1 leading-relaxed">
-                Responsive assistance with order tracking, plant care guidance, and product advice.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
-          {/* Brand Intro */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="inline-block bg-white/95 rounded-2xl px-3.5 py-2 shadow-sm border border-brand-sage/30">
+    <footer className="relative z-10 w-full bg-surface-container-lowest mt-20 border-t border-outline-variant/30 pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-12 border-b border-outline-variant/20">
+          {/* Brand Intro & Specimen Station */}
+          <div className="lg:col-span-5 flex flex-col gap-4 pr-0 lg:pr-8">
+            <Link href="/" className="flex items-center gap-2.5">
               <Image
                 src="/images/plantrix-logo.png"
                 alt="Plantrix Botanics"
-                width={160}
-                height={58}
-                className="h-8 sm:h-9 w-auto object-contain"
+                width={150}
+                height={45}
+                className="h-8 w-auto object-contain"
               />
-            </div>
-            <p className="text-xs text-brand-sage/80 leading-relaxed max-w-sm">
-              Cultivating serene spaces through healthy indoor greenery, bespoke planters, and smart home essentials designed for intentional, clutter-free everyday living.
+              <span className="font-display font-semibold text-xl tracking-tight text-on-surface">
+                Plantrix Botanics
+              </span>
+            </Link>
+
+            <p className="font-sans text-sm text-on-surface-variant leading-relaxed max-w-md">
+              Synthesis of wild horticulture and synthetic precision. Engineering biophilic architecture,
+              rare specimen acclimatization, and high-fidelity indoor microclimates for discerning homes.
             </p>
-            <div className="text-xs text-brand-sage/60 pt-2">
-              <p>Email: care@plantrixbotanics.com</p>
-              <p className="mt-1">Dispatched from Bengaluru & Delhi Fulfillment Hubs</p>
+
+            <div className="flex items-center gap-2.5 mt-2">
+              <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+              <span className="font-label-sm text-xs uppercase tracking-wider text-on-surface-variant">
+                Greenhouse Station 01 • Calibrated Hydration Active
+              </span>
             </div>
           </div>
 
-          {/* Department 1: Plants */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-brand-sage mb-3">
-              Plants & Botanics
+          {/* Departments */}
+          <div className="lg:col-span-2 flex flex-col gap-3">
+            <h4 className="font-label-md text-xs uppercase tracking-widest text-primary font-bold">
+              Departments
             </h4>
-            <ul className="space-y-2 text-xs text-brand-ivory/80">
+            <ul className="flex flex-col gap-2 text-sm text-on-surface-variant">
               <li>
-                <Link href="/plants-botanics" className="hover:text-white transition-colors">
-                  All Greenery & Décor
+                <Link href="/plants-botanics" className="hover:text-on-surface transition-colors">
+                  Rare Living Specimens
                 </Link>
               </li>
               <li>
-                <Link href="/plants-botanics/indoor-plants" className="hover:text-white transition-colors">
-                  Indoor Live Plants
+                <Link href="/plants-botanics" className="hover:text-on-surface transition-colors">
+                  Architectural Planters
                 </Link>
               </li>
               <li>
-                <Link href="/plants-botanics/pots-planters" className="hover:text-white transition-colors">
-                  Ceramic Pots & Planters
+                <Link href="/plants-botanics" className="hover:text-on-surface transition-colors">
+                  Hydration &amp; Mist Vessels
                 </Link>
               </li>
               <li>
-                <Link href="/plants-botanics/plant-stands" className="hover:text-white transition-colors">
-                  Metal & Wooden Stands
+                <Link href="/home-essentials" className="hover:text-on-surface transition-colors">
+                  Modular Pantry Organizers
                 </Link>
               </li>
               <li>
-                <Link href="/plants-botanics/gardening-tools" className="hover:text-white transition-colors">
-                  Watering & Care Tools
+                <Link href="/home-essentials" className="hover:text-on-surface transition-colors">
+                  Everyday Kitchen Utilities
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Department 2: Home */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-brand-sage mb-3">
-              Home Essentials
+          {/* Client Concierge */}
+          <div className="lg:col-span-2 flex flex-col gap-3">
+            <h4 className="font-label-md text-xs uppercase tracking-widest text-primary font-bold">
+              Client Concierge
             </h4>
-            <ul className="space-y-2 text-xs text-brand-ivory/80">
+            <ul className="flex flex-col gap-2 text-sm text-on-surface-variant">
               <li>
-                <Link href="/home-essentials" className="hover:text-white transition-colors">
-                  All Home Utilities
+                <Link href="/about" className="hover:text-on-surface transition-colors">
+                  Specimen Health Guarantee
                 </Link>
               </li>
               <li>
-                <Link href="/home-essentials/kitchen-utilities" className="hover:text-white transition-colors">
-                  Kitchen Utilities
+                <Link href="/orders" className="hover:text-on-surface transition-colors">
+                  Safe Transit Tracking
                 </Link>
               </li>
               <li>
-                <Link href="/home-essentials/storage-organizers" className="hover:text-white transition-colors">
-                  Pantry & Storage Bins
+                <Link href="/#acclimatization" className="hover:text-on-surface transition-colors">
+                  Acclimatization Guides
                 </Link>
               </li>
               <li>
-                <Link href="/home-essentials/bathroom-accessories" className="hover:text-white transition-colors">
-                  Bathroom Organization
+                <Link href="/contact" className="hover:text-on-surface transition-colors">
+                  Botanical Care Advisory
                 </Link>
               </li>
               <li>
-                <Link href="/home-essentials/space-saving" className="hover:text-white transition-colors">
-                  Space-Saving Solutions
+                <Link href="/returns" className="hover:text-on-surface transition-colors">
+                  Returns &amp; Safe Exchanges
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Help & Policies */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-brand-sage mb-3">
-              Customer Care
+          {/* Biophilic Dispatch (Newsletter) */}
+          <div className="lg:col-span-3 flex flex-col gap-3">
+            <h4 className="font-label-md text-xs uppercase tracking-widest text-primary font-bold">
+              Biophilic Dispatch
             </h4>
-            <ul className="space-y-2 text-xs text-brand-ivory/80">
-              <li>
-                <Link href="/track-order" className="hover:text-white transition-colors">
-                  Track Your Order
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping-policy" className="hover:text-white transition-colors">
-                  Shipping & Dispatch
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund-policy" className="hover:text-white transition-colors">
-                  Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
+            <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
+              Receive archival releases, specimen harvest notes, and horticultural research bulletins.
+            </p>
+
+            {subscribed ? (
+              <div className="p-3 rounded-xl bg-surface-container border border-secondary/40 text-secondary text-xs flex items-center gap-2">
+                <Check className="w-4 h-4 text-secondary shrink-0" />
+                <span>Subscription confirmed. Welcome to the Dispatch.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-2 mt-1">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="collector@domain.org"
+                  required
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-full px-4 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary transition-all"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-secondary text-on-secondary font-label-md text-xs uppercase tracking-widest py-2.5 px-4 rounded-full font-bold hover:shadow-lime-glow transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Sprout className="w-4 h-4" />
+                  <span>Subscribe to Journal</span>
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="mt-12 pt-6 border-t border-brand-botanical/20 flex flex-col sm:flex-row items-center justify-between text-[11px] text-brand-sage/60 gap-4">
-          <p>© {new Date().getFullYear()} Plantrix Botanics. All rights reserved.</p>
-          <p className="text-brand-sage/40">
-            Handcrafted with care for botanical living & mindful spaces.
-          </p>
+        {/* Bottom Bar: Copyright & Compliance */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 font-label-sm text-xs uppercase tracking-wider text-outline text-center sm:text-left">
+            <p>© {currentYear} Plantrix Botanics Inc. All Rights Preserved.</p>
+            <span className="hidden sm:inline">•</span>
+            <p className="hidden md:inline">Synthetic Horticultural Architecture</p>
+          </div>
+
+          <div className="flex items-center gap-4 font-label-sm text-xs uppercase tracking-wider text-on-surface-variant">
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Privacy Spec
+            </Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">
+              Terms of Cultivation
+            </Link>
+            <Link href="/shipping" className="hover:text-primary transition-colors">
+              Transit Compliance
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

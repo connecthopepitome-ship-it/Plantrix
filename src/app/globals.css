@@ -3,14 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --color-forest: #183d30;
-  --color-botanical: #285744;
-  --color-sage: #e4ebdd;
-  --color-sage-light: #f3f6f0;
-  --color-ivory: #faf8f2;
-  --color-charcoal: #202520;
-  --color-muted: #70776f;
-  --color-terracotta: #c47756;
+  --color-background: #101510;
+  --color-surface-lowest: #0b0f0b;
+  --color-surface-low: #181d18;
+  --color-surface: #101510;
+  --color-surface-container: #1c211c;
+  --color-surface-high: #262b26;
+  --color-surface-highest: #313631;
+  --color-primary: #a7cfbd;
+  --color-primary-container: #183d30;
+  --color-secondary: #9ed753;
+  --color-secondary-fixed: #b9f46c;
+  --color-tertiary: #ffb597;
+  --color-on-surface: #dfe4dc;
+  --color-on-surface-variant: #c1c8c3;
+  --color-outline: #8b928e;
+  --color-outline-variant: #414844;
 }
 
 @layer base {
@@ -18,29 +26,29 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--color-ivory);
-    color: var(--color-charcoal);
+    background-color: #101510;
+    color: #dfe4dc;
+    color-scheme: dark;
   }
 
   body {
-    background-color: var(--color-ivory);
-    color: var(--color-charcoal);
-    font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #101510;
+    color: #dfe4dc;
+    font-family: var(--font-manrope), 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-manrope), 'Manrope', 'Outfit', sans-serif;
-    color: var(--color-forest);
+    font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
     letter-spacing: -0.02em;
   }
 
   /* Accessibility: Visible focus indicators */
   :focus-visible {
-    outline: 2px solid var(--color-botanical);
-    outline-offset: 2px;
+    outline: 2px solid #b9f46c;
+    outline-offset: 3px;
   }
 
   /* Accessibility: Reduced motion preference */
@@ -57,11 +65,45 @@
 }
 
 @layer utilities {
-  .bg-radial-subtle {
-    background: radial-gradient(circle at 50% 0%, rgba(228, 235, 221, 0.45) 0%, rgba(250, 248, 242, 1) 75%);
+  /* Subtle glassmorphism and liquid glass surfaces */
+  .glass-panel {
+    background: rgba(28, 33, 28, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(65, 72, 68, 0.35);
+  }
+
+  .glass-nav {
+    background: rgba(16, 21, 16, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(65, 72, 68, 0.4);
+  }
+
+  .glass-card {
+    background: rgba(24, 29, 24, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(65, 72, 68, 0.3);
+  }
+
+  .glass-hud {
+    background: rgba(16, 21, 16, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(167, 207, 189, 0.2);
   }
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Custom subtle scrollbar */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
