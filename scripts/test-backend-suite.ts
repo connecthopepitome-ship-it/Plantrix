@@ -338,6 +338,134 @@ async function runTestSuite() {
   assert(authDev.authorized && authDev.status === 200, 'Dev/API admin access authorized');
 
   // -------------------------------------------------------------
+  // TEST GROUP 11: Bulk Product Import Module
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 11: Bulk Product Import Module ---');
+  const {
+    parseInrToPaise,
+    matchImagesForSku,
+    validateImportCsv,
+    executeImportJob,
+    generateImportTemplateCsv,
+    generateImportSampleCsv,
+    getImportJobs,
+  } = await import('../src/lib/services/bulkImportService');
+
+  // 11.1 Exact INR to Paise Conversion
+  const p1 = parseInrToPaise('1899');
+  assert(p1.paise === 189900, 'INR integer converted exactly to paise (1899 -> 189900)');
+  const p2 = parseInrToPaise('₹ 2,499.50');
+  assert(p2.paise === 249950, 'INR currency string with symbols converted to paise (₹2,499.50 -> 249950)');
+  const pInvalid = parseInrToPaise('-150');
+  assert(Boolean(pInvalid.error), 'Negative price rejected with validation error');
+
+  // 11.2 Template Generation
+  const tpl = generateImportTemplateCsv();
+  assert(tpl.includes('sku,name,slug') && tpl.includes('sellingPrice'), 'Official CSV template contains standard headers');
+  const sample = generateImportSampleCsv();
+  assert(sample.includes('PLX-POT-201') && sample.includes('PLX-MIS-202'), 'Sample CSV contains valid multi-department products');
+
+  // 11.3 ZIP Image Matching & Path Traversal Security
+  const mockArchiveFiles = [
+    'POT-001/01.webp',
+    'POT-001/02.webp',
+    'POT-001/03.webp',
+    'TOOL-002-01.jpg',
+    'TOOL-002-02.jpg',
+    'custom-hero.webp',
+    '../etc/passwd', // malicious traversal
+    '/root/secret.png', // malicious absolute
+    '__MACOSX/._POT-001.webp', // OS junk
+  ];
+
+  // Path traversal test
+  const matchedTraversal = matchImagesForSku('TRAV', ['../etc/passwd'], mockArchiveFiles);
+  assert(matchedTraversal.length === 0, 'Malicious path traversal in archive safely rejected');
+
+  // Match by SKU folder
+  const folderMatches = matchImagesForSku('POT-001', [], mockArchiveFiles);
+  assert(
+    folderMatches.length === 3 && folderMatches[0] === 'POT-001/01.webp',
+    'Matched multiple images by SKU folder with deterministic ordering'
+  );
+
+  // Match by SKU prefix
+  const prefixMatches = matchImagesForSku('TOOL-002', [], mockArchiveFiles);
+  assert(
+    prefixMatches.length === 2 && prefixMatches[0] === 'TOOL-002-01.jpg',
+    'Matched images by SKU prefix (TOOL-002-01.jpg)'
+  );
+
+  // Match by explicit CSV filename
+  const explicitMatches = matchImagesForSku('EXP-999', ['custom-hero.webp'], mockArchiveFiles);
+  assert(
+    explicitMatches.length === 1 && explicitMatches[0] === 'custom-hero.webp',
+    'Matched explicit image filename from CSV'
+  );
+
+  // 11.4 CSV Validation & Duplicate Detection
+  const validCsv = `sku,name,categoryId,sellingPrice,stock\nTEST-SKU-01,Test Ceramic Pot,pots-planters,1299,20\nTEST-SKU-02,Brass Kitchen Tongs,cooking-tools,899,15`;
+  const valRes = await validateImportCsv(validCsv, { duplicatePolicy: 'CREATE_NEW' });
+  assert(valRes.totalRows === 2 && valRes.validRows === 2, 'Valid CSV parsed with 2 valid products');
+  assert(valRes.rows[0].department === 'GARDEN_OUTDOOR', 'Category "pots-planters" auto-mapped to GARDEN_OUTDOOR');
+  assert(valRes.rows[1].department === 'KITCHEN_TOOLS', 'Category "cooking-tools" auto-mapped to KITCHEN_TOOLS');
+
+  // Missing required column error
+  const invalidCsv = `sku,name\nTEST-03,Missing Price Pot`;
+  const valMissingPrice = await validateImportCsv(invalidCsv);
+  assert(valMissingPrice.rows[0].action === 'ERROR', 'Row missing sellingPrice marked as ERROR');
+
+  // Intra-file duplicate SKU check
+  const dupCsv = `sku,name,categoryId,sellingPrice\nDUP-01,Product A,pots-planters,999\nDUP-01,Product B,pots-planters,1499`;
+  const valDup = await validateImportCsv(dupCsv);
+  assert(
+    valDup.rows[0].action === 'ERROR' && valDup.rows[1].action === 'ERROR',
+    'Intra-file duplicate SKUs both flagged as errors'
+  );
+
+  // 11.5 Duplicate Policy: UPDATE_EXISTING vs SKIP_EXISTING
+  // SKU PLX-POT-001 exists in database
+  const existingSkuCsv = `sku,name,categoryId,sellingPrice,stock\nPLX-POT-001,Updated Ribbed Planter,pots-planters,1999,35`;
+  
+  const valUpdate = await validateImportCsv(existingSkuCsv, { duplicatePolicy: 'UPDATE_EXISTING' });
+  assert(valUpdate.rows[0].action === 'UPDATE', 'Policy UPDATE_EXISTING marks existing SKU as UPDATE');
+
+  const valSkip = await validateImportCsv(existingSkuCsv, { duplicatePolicy: 'SKIP_EXISTING' });
+  assert(valSkip.rows[0].action === 'SKIP', 'Policy SKIP_EXISTING marks existing SKU as SKIP');
+
+  const valConflict = await validateImportCsv(existingSkuCsv, { duplicatePolicy: 'CREATE_NEW' });
+  assert(valConflict.rows[0].action === 'ERROR', 'Policy CREATE_NEW flags existing SKU as CONFLICT ERROR');
+
+  // 11.6 Real Dry-Run Simulation (Zero writes)
+  const dryRunJob = await executeImportJob({
+    rows: valRes.rows,
+    duplicatePolicy: 'CREATE_NEW',
+    isDryRun: true,
+    importAsDraftDefault: true,
+    initiatingAdminId: 'test-admin',
+    fileName: 'dryrun-test.csv',
+  });
+  assert(
+    dryRunJob.isDryRun && dryRunJob.status === 'COMPLETED' && dryRunJob.createdProductIds.length === 0,
+    'Dry run simulates execution without creating database records'
+  );
+
+  // 11.7 Permanent Import Execution & Job Record Tracking
+  const permJob = await executeImportJob({
+    rows: valRes.rows,
+    duplicatePolicy: 'CREATE_NEW',
+    isDryRun: false,
+    importAsDraftDefault: true,
+    initiatingAdminId: 'test-admin',
+    fileName: 'permanent-test.csv',
+  });
+  assert(permJob.successCount === 2, 'Committed import successfully created 2 products in batch');
+  assert(permJob.createdProductIds.length === 2, 'Created product IDs recorded in import job record');
+
+  const allJobs = await getImportJobs();
+  assert(allJobs.some((j) => j.jobId === permJob.jobId), 'Import job persisted in importJobs history');
+
+  // -------------------------------------------------------------
   // SUMMARY
   // -------------------------------------------------------------
   console.log('\n===============================================================');

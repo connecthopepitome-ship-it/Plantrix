@@ -358,3 +358,26 @@ export async function removeProductImageKey(
   const currentKeys = (existing.imageKeys || []).filter((k) => k !== imageKey);
   return updateProduct(productId, { imageKeys: currentKeys });
 }
+
+/**
+ * Retrieves an internal product record by unique SKU (Admin & Import use)
+ */
+export async function getProductBySku(sku: string): Promise<Product | null> {
+  if (!sku) return null;
+  const cleanSku = sku.trim().toUpperCase();
+
+  try {
+    const { documents } = await queryFirestoreCollection<Product>(PRODUCTS_COLLECTION, {
+      pageSize: 100,
+    });
+    const found = documents.find((d) => d.sku?.trim().toUpperCase() === cleanSku);
+    if (found) return found;
+  } catch {
+    // Fallback to local memory store
+  }
+
+  const match = Array.from(getMemoryStore().values()).find(
+    (p) => p.sku?.trim().toUpperCase() === cleanSku
+  );
+  return match || null;
+}

@@ -73,6 +73,7 @@ const ADMIN_NAVIGATION: NavSection[] = [
       { label: 'Tools & Hardware', href: '/admin/catalogue?dept=TOOLS_HARDWARE', icon: Wrench, deptQuery: 'TOOLS_HARDWARE' },
       { label: 'Categories', href: '/admin/catalogue/categories', icon: Tags },
       { label: 'Product Attributes', href: '/admin/catalogue/attributes', icon: ListFilter },
+      { label: 'Bulk Import', href: '/admin/catalogue/bulk-import', icon: DownloadCloud, badge: 'New' },
     ],
   },
   {

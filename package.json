@@ -15,10 +15,12 @@
   "dependencies": {
     "aws4fetch": "^1.0.20",
     "clsx": "^2.1.1",
+    "fflate": "^0.8.3",
     "firebase": "^10.14.1",
     "jose": "^5.9.6",
     "lucide-react": "^0.453.0",
     "next": "^14.2.15",
+    "papaparse": "^5.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@opennextjs/cloudflare": "^0.3.8",
     "@types/node": "^20.17.0",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
