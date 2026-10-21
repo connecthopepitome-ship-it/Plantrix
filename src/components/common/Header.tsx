@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Sprout, 
@@ -42,23 +43,21 @@ export function Header() {
             </button>
           </div>
 
-          {/* Brand Logo & Editorial Wordmark */}
-          <div className="flex items-center gap-3">
+          {/* Brand Logo */}
+          <div className="flex items-center">
             <Link 
               href="/" 
-              className="group flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-botanical rounded-lg py-1 px-1"
+              className="group flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-botanical rounded-lg py-1 px-1 transition-opacity hover:opacity-95"
+              aria-label="Plantrix Botanics - Home"
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-forest flex items-center justify-center text-brand-ivory shadow-sm group-hover:bg-brand-botanical transition-colors">
-                <Sprout className="w-5 h-5 text-brand-sage" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-bold text-xl sm:text-2xl tracking-tight text-brand-forest leading-none">
-                  Plantrix
-                </span>
-                <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-brand-muted mt-0.5">
-                  Botanics & Home
-                </span>
-              </div>
+              <Image
+                src="/images/plantrix-logo.png"
+                alt="Plantrix Botanics"
+                width={160}
+                height={58}
+                priority
+                className="h-8 sm:h-10 w-auto object-contain"
+              />
             </Link>
           </div>
 
@@ -165,12 +164,20 @@ export function Header() {
           {/* Drawer Content */}
           <div className="relative w-full max-w-xs bg-white h-full shadow-2xl flex flex-col z-10 overflow-y-auto">
             <div className="p-4 border-b border-brand-sage-border flex items-center justify-between bg-brand-ivory">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-brand-forest flex items-center justify-center text-brand-sage">
-                  <Sprout className="w-4 h-4" />
-                </div>
-                <span className="font-display font-bold text-lg text-brand-forest">Plantrix</span>
-              </div>
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-botanical rounded-lg p-0.5"
+                aria-label="Plantrix Botanics - Home"
+              >
+                <Image
+                  src="/images/plantrix-logo.png"
+                  alt="Plantrix Botanics"
+                  width={140}
+                  height={51}
+                  className="h-7 sm:h-8 w-auto object-contain"
+                />
+              </Link>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}

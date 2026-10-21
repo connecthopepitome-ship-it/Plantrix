@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Sprout, ShieldCheck, Truck, RotateCcw, HeartHandshake } from 'lucide-react';
 
 export function Footer() {
@@ -63,13 +64,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Intro */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-brand-botanical flex items-center justify-center text-brand-sage">
-                <Sprout className="w-4 h-4" />
-              </div>
-              <span className="font-display font-bold text-xl text-white tracking-tight">
-                Plantrix Botanics
-              </span>
+            <div className="inline-block bg-white/95 rounded-2xl px-3.5 py-2 shadow-sm border border-brand-sage/30">
+              <Image
+                src="/images/plantrix-logo.png"
+                alt="Plantrix Botanics"
+                width={160}
+                height={58}
+                className="h-8 sm:h-9 w-auto object-contain"
+              />
             </div>
             <p className="text-xs text-brand-sage/80 leading-relaxed max-w-sm">
               Cultivating serene spaces through healthy indoor greenery, bespoke planters, and smart home essentials designed for intentional, clutter-free everyday living.
