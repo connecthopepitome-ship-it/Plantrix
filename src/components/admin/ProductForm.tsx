@@ -18,6 +18,7 @@ import {
   Info,
 } from 'lucide-react';
 import { Product, ProductStatus } from '@/types/product';
+import { Department } from '@/types/category';
 import { saveAdminProduct } from '@/data/adminStore';
 
 interface ProductFormProps {
@@ -34,8 +35,8 @@ export function ProductForm({ initialProduct, isEditMode = false }: ProductFormP
   const [name, setName] = useState(initialProduct?.name || '');
   const [slug, setSlug] = useState(initialProduct?.slug || '');
   const [brand, setBrand] = useState(initialProduct?.brand || 'Plantrix Studio');
-  const [department, setDepartment] = useState<'PLANTS_BOTANICS' | 'HOME_ESSENTIALS'>(
-    initialProduct?.department || 'PLANTS_BOTANICS'
+  const [department, setDepartment] = useState<Department>(
+    initialProduct?.department || 'GARDEN_OUTDOOR'
   );
   const [categoryId, setCategoryId] = useState(initialProduct?.categoryId || 'pots-planters');
   const [shortDescription, setShortDescription] = useState(initialProduct?.shortDescription || '');
@@ -271,8 +272,13 @@ export function ProductForm({ initialProduct, isEditMode = false }: ProductFormP
                 onChange={(e) => setDepartment(e.target.value as any)}
                 className="w-full bg-surface-container border border-outline-variant/40 rounded-xl px-4 py-2.5 text-xs text-on-surface focus:outline-none focus:border-secondary font-label-sm"
               >
-                <option value="PLANTS_BOTANICS">Department 01: Plants &amp; Botanics</option>
-                <option value="HOME_ESSENTIALS">Department 02: Home &amp; Everyday Essentials</option>
+                <option value="GARDEN_OUTDOOR">Garden &amp; Outdoor</option>
+                <option value="KITCHEN_TOOLS">Kitchen Tools &amp; Utilities</option>
+                <option value="HOME_ESSENTIALS">Home &amp; Everyday Essentials</option>
+                <option value="CLEANING_IMPROVEMENT">Cleaning &amp; Improvement</option>
+                <option value="STORAGE_ORGANIZATION">Storage &amp; Organization</option>
+                <option value="TOOLS_HARDWARE">Tools &amp; Hardware</option>
+                <option value="PLANTS_BOTANICS">Plants &amp; Botanics (Legacy)</option>
               </select>
             </div>
 

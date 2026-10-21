@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -17,12 +17,16 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Product, ProductStatus } from '@/types/product';
+import { useSearchParams } from 'next/navigation';
 import { getAdminProducts, deleteAdminProduct, saveAdminProduct } from '@/data/adminStore';
 
-export default function AdminCataloguePage() {
+function AdminCatalogueContent() {
+  const searchParams = useSearchParams();
+  const urlDept = searchParams?.get('dept');
+
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState<'ALL' | 'PLANTS_BOTANICS' | 'HOME_ESSENTIALS'>('ALL');
+  const [departmentFilter, setDepartmentFilter] = useState<string>(urlDept || 'ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'stock'>('name');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -30,6 +34,12 @@ export default function AdminCataloguePage() {
   const loadCatalogue = () => {
     setProducts(getAdminProducts());
   };
+
+  useEffect(() => {
+    if (urlDept) {
+      setDepartmentFilter(urlDept);
+    }
+  }, [urlDept]);
 
   useEffect(() => {
     loadCatalogue();
@@ -54,7 +64,10 @@ export default function AdminCataloguePage() {
       p.brand?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesDept =
-      departmentFilter === 'ALL' || p.department === departmentFilter;
+      departmentFilter === 'ALL' ||
+      p.department === departmentFilter ||
+      (departmentFilter === 'GARDEN_OUTDOOR' && p.department === 'PLANTS_BOTANICS') ||
+      (departmentFilter === 'PLANTS_BOTANICS' && p.department === 'GARDEN_OUTDOOR');
 
     const matchesStatus =
       statusFilter === 'ALL' || p.status === statusFilter;
@@ -114,12 +127,17 @@ export default function AdminCataloguePage() {
           {/* Department Filter */}
           <select
             value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value as any)}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
             className="bg-surface-container border border-outline-variant/30 rounded-full px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-secondary font-label-sm"
           >
             <option value="ALL">All Departments</option>
-            <option value="PLANTS_BOTANICS">Plants &amp; Botanics</option>
-            <option value="HOME_ESSENTIALS">Home Essentials</option>
+            <option value="GARDEN_OUTDOOR">Garden &amp; Outdoor</option>
+            <option value="KITCHEN_TOOLS">Kitchen Tools &amp; Utilities</option>
+            <option value="HOME_ESSENTIALS">Home &amp; Everyday Essentials</option>
+            <option value="CLEANING_IMPROVEMENT">Cleaning &amp; Improvement</option>
+            <option value="STORAGE_ORGANIZATION">Storage &amp; Organization</option>
+            <option value="TOOLS_HARDWARE">Tools &amp; Hardware</option>
+            <option value="PLANTS_BOTANICS">Plants &amp; Botanics (Legacy)</option>
           </select>
 
           {/* Status Filter */}
@@ -345,5 +363,19 @@ export default function AdminCataloguePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminCataloguePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-xs font-mono text-outline">
+          Loading catalogue archive...
+        </div>
+      }
+    >
+      <AdminCatalogueContent />
+    </Suspense>
   );
 }
