@@ -31,7 +31,21 @@ function AdminCatalogueContent() {
   const [sortBy, setSortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'stock'>('name');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const loadCatalogue = () => {
+  const loadCatalogue = async () => {
+    try {
+      const res = await fetch('/api/admin/products', {
+        headers: { 'x-dev-admin': 'true' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setProducts(data.data);
+          return;
+        }
+      }
+    } catch {
+      // Fallback
+    }
     setProducts(getAdminProducts());
   };
 
@@ -45,15 +59,30 @@ function AdminCatalogueContent() {
     loadCatalogue();
   }, []);
 
-  const handleDelete = (id: string) => {
-    deleteAdminProduct(id);
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`/api/admin/products/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-dev-admin': 'true' },
+      });
+    } catch {
+      deleteAdminProduct(id);
+    }
     setConfirmDeleteId(null);
     loadCatalogue();
   };
 
-  const handleToggleStatus = (product: Product) => {
+  const handleToggleStatus = async (product: Product) => {
     const nextStatus: ProductStatus = product.status === 'ACTIVE' ? 'DRAFT' : 'ACTIVE';
-    saveAdminProduct({ ...product, status: nextStatus });
+    try {
+      await fetch(`/api/admin/products/${product.productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-dev-admin': 'true' },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+    } catch {
+      saveAdminProduct({ ...product, status: nextStatus });
+    }
     loadCatalogue();
   };
 

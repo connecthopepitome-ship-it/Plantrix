@@ -13,6 +13,7 @@
     "deploy": "npm run cf-build && wrangler deploy"
   },
   "dependencies": {
+    "aws4fetch": "^1.0.20",
     "clsx": "^2.1.1",
     "firebase": "^10.14.1",
     "jose": "^5.9.6",
@@ -20,7 +21,8 @@
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^2.5.4"
+    "tailwind-merge": "^2.5.4",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^0.3.8",

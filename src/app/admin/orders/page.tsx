@@ -24,7 +24,21 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
 
-  const loadOrders = () => {
+  const loadOrders = async () => {
+    try {
+      const res = await fetch('/api/admin/orders', {
+        headers: { 'x-dev-admin': 'true' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setOrders(data.data);
+          return;
+        }
+      }
+    } catch {
+      // Fallback
+    }
     setOrders(getAdminOrders());
   };
 

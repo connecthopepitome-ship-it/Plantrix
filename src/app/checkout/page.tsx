@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [placedOrderNumber, setPlacedOrderNumber] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const isFreeShipping = subtotalPaise >= 99900;
   const shippingPaise = isFreeShipping ? 0 : 9900;
@@ -32,17 +33,58 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage(null);
 
-    setTimeout(() => {
-      const orderNum = `PLX-${Math.floor(100000 + Math.random() * 900000)}`;
-      setPlacedOrderNumber(orderNum);
+    try {
+      const cleanPhone = formData.phone.replace(/[^0-9]/g, '').slice(-10);
+      if (cleanPhone.length !== 10) {
+        throw new Error('Please enter a valid 10-digit Indian mobile number.');
+      }
+      if (!/^\d{6}$/.test(formData.pinCode.trim())) {
+        throw new Error('Please enter a valid 6-digit Indian PIN code.');
+      }
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer: {
+            name: formData.name,
+            email: formData.email || undefined,
+            phone: cleanPhone,
+          },
+          shippingAddress: {
+            line1: formData.address,
+            city: formData.city,
+            state: formData.state,
+            postalCode: formData.pinCode.trim(),
+            country: 'IN',
+          },
+          items: cart.map((item) => ({
+            productId: item.productId,
+            variantId: item.selectedVariant?.variantId,
+            quantity: item.quantity,
+          })),
+          paymentMethod: formData.paymentMethod,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit order. Please check address details.');
+      }
+
+      setPlacedOrderNumber(data.orderNumber || data.orderId);
       setOrderComplete(true);
       clearCart();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error while placing order. Please try again.');
+    } finally {
       setIsSubmitting(false);
-    }, 1200);
+    }
   };
 
   if (orderComplete) {
@@ -358,6 +400,12 @@ export default function CheckoutPage() {
               </span>
             </div>
           </div>
+
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-error/15 border border-error/40 text-error text-xs font-sans animate-fade-in leading-relaxed">
+              <strong>Order Placement Notice:</strong> {errorMessage}
+            </div>
+          )}
 
           <button
             type="submit"

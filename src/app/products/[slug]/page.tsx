@@ -142,8 +142,8 @@ export default function ProductDetailPage() {
     router.push('/checkout');
   };
 
-  // Pincode calculation
-  const handleCheckPincode = (e: React.FormEvent) => {
+  // Pincode serviceability calculation via backend API
+  const handleCheckPincode = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPin = pincode.trim();
     if (!/^\d{6}$/.test(cleanPin)) {
@@ -155,21 +155,45 @@ export default function ProductDetailPage() {
       return;
     }
 
-    // Calculate delivery date (2-3 business days)
-    const delivDate = new Date();
-    delivDate.setDate(delivDate.getDate() + 3);
-    const dateStr = delivDate.toLocaleDateString('en-IN', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'short',
-    });
-
-    setPincodeStatus({
-      checked: true,
-      valid: true,
-      deliveryDate: dateStr,
-      message: `Verified: Express dispatch to PIN ${cleanPin} available via Blue Dart Express.`,
-    });
+    try {
+      const res = await fetch('/api/shipping/serviceability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pincode: cleanPin }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.data?.serviceable) {
+        setPincodeStatus({
+          checked: true,
+          valid: true,
+          deliveryDate: data.data.estimatedDeliveryDate,
+          message:
+            data.data.message ||
+            `Verified: Express dispatch to PIN ${cleanPin} available via ${data.data.courierPartner}.`,
+        });
+      } else {
+        setPincodeStatus({
+          checked: true,
+          valid: false,
+          message: data.error || 'Courier service currently unserviceable to this PIN.',
+        });
+      }
+    } catch {
+      // Offline fallback calculation (3 days)
+      const delivDate = new Date();
+      delivDate.setDate(delivDate.getDate() + 3);
+      const dateStr = delivDate.toLocaleDateString('en-IN', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+      });
+      setPincodeStatus({
+        checked: true,
+        valid: true,
+        deliveryDate: dateStr,
+        message: `Verified: Express dispatch to PIN ${cleanPin} available via Blue Dart Express.`,
+      });
+    }
   };
 
   // Filter out empty specifications

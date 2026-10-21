@@ -22,7 +22,21 @@ export default function AdminShipmentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [carrierFilter, setCarrierFilter] = useState<string>('ALL');
 
-  const loadShipments = () => {
+  const loadShipments = async () => {
+    try {
+      const res = await fetch('/api/admin/shipments', {
+        headers: { 'x-dev-admin': 'true' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setShipments(data.data);
+          return;
+        }
+      }
+    } catch {
+      // Fallback
+    }
     setShipments(getAdminShipments());
   };
 
