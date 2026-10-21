@@ -6,7 +6,7 @@ import { Footer } from '@/components/common/Footer';
 import { AnnouncementBar } from '@/components/common/AnnouncementBar';
 import { SearchModal } from '@/components/common/SearchModal';
 import { CartDrawer } from '@/components/common/CartDrawer';
-import { ToastNotification } from '@/components/common/ToastNotification';
+import { StorefrontChrome } from '@/components/common/StorefrontChrome';
 import { ShopProvider } from '@/context/ShopContext';
 
 const spaceGrotesk = Space_Grotesk({
@@ -60,19 +60,7 @@ export default function RootLayout({
             <div className="absolute bottom-[10%] right-[-10%] w-[600px] h-[600px] bg-secondary-container/10 rounded-full blur-[160px]" />
           </div>
 
-          <AnnouncementBar />
-          <Header />
-
-          <main className="relative z-10 w-full bg-transparent min-h-screen">
-            {children}
-          </main>
-
-          <Footer />
-
-          {/* Interactive Global Drawers & Modals */}
-          <SearchModal />
-          <CartDrawer />
-          <ToastNotification />
+          <StorefrontChrome>{children}</StorefrontChrome>
         </ShopProvider>
       </body>
     </html>
